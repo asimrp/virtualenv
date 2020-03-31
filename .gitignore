@@ -1,0 +1,4 @@
+.vagrant/
+provision.retry
+*.swp
+ubuntu*.log

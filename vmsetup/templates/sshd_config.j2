@@ -1,0 +1,18 @@
+#
+# {{ ansible_managed }}
+# Local modifications will be overwritten.
+#
+# AcceptEnv LANG LANGUAGE LC_* XMODIFIERS
+ChallengeResponseAuthentication no
+GSSAPIAuthentication no
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+PasswordAuthentication no
+PermitRootLogin no
+Port 22
+Protocol 2
+Subsystem sftp /usr/libexec/openssh/sftp-server
+SyslogFacility AUTHPRIV
+UsePAM yes
+X11Forwarding no

@@ -1,0 +1,56 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+        . /etc/bashrc
+fi
+
+# User specific aliases and functions
+
+EDITOR=/usr/bin/emacs
+
+rev() {
+       local r=$(git symbolic-ref --quiet HEAD 2>/dev/null ; [ $? = 1 ] && echo "detached")
+       test -n "$r" && printf '@%s' "${r#refs/heads/}"
+       local s=$(git stash list 2>/dev/null | wc -l)
+       (( "$s" != "0" )) && printf ' (%d)' "$s"
+}
+
+numjobs() {
+       local n=$(jobs | wc -l)
+       (( "$n" != "0" )) && printf ' (%d)' "$n"
+}
+
+semicol=1
+if echo $LANG | grep -q UTF-8; then
+       semicol="36;1"
+fi
+if [ $SHLVL -gt 1 ]; then
+       depth="\\[\\e[34m\\]$SHLVL\\[\\e[0;1m\\] "
+fi
+pgversion=$(rpm -qa --qf "%{VERSION}" postgresql\*-server 2>/dev/null)
+[ $? != 0 ] && pgversion=""
+pgversion=$(echo "$pgversion" | tr -d . | cut -b 1-2)
+release=$(cut -b 22-24 /etc/redhat-release 2>/dev/null)
+if [ -n "$pgversion" -a -n "$release" ]; then
+       hostver="(${release}p$pgversion)"
+elif [ -n "$release$pgversion" ]; then
+       hostver="($release$pgversion)"
+else
+       hostver=""
+fi
+PS1='\[\e[1m\]: '$depth'[\[\e[32m\]\h\[\e[0;1m\]'$hostver' \w\[\e[32m\]`s=$?;rev;exit $s`\[\e[0;1m\]] \[`s=$? ; [ $s != 0 ] && echo -n "\e[31m"; exit $s`\]`printf "%03d" $?`\[\e[0;33m\]`numjobs`\[\e[0;'$semicol'm\];\[\e[0m\] '
+unset depth
+
+# for x in SSH_AUTH_SOCK SSH_CONNECTION; do export "`tmux showenv| grep $x`"; done
+fix_ssh_keys() {
+	for x in SSH_AUTH_SOCK SSH_CONNECTION; do 
+		export "`tmux showenv| grep $x`"; 
+	done;
+}
+
+alias graph="git log --graph --abbrev-commit --decorate --date=local --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ad)%C(reset) %C(bold black)%s%C(reset) %C(blue)- %an%C(reset)%C(bold red)%d%C(reset)' --all"
+alias author="git shortlog -s -n --all"
+
+source ~/.git-completion.bash
+

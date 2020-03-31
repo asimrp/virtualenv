@@ -1,0 +1,13 @@
+---
+develop_users:
+  - name: apraveen
+    ssh_keys:
+      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDm5XU18gYWMmWMJm9KJfrmkR05HaZmAIE3rdak9oXM4T0ZITK9TxqXbfIPceYHMrcxUVDwYygDHq4QQMwMnsPOqdpGCqW9timrQWEwM2lCRGYpE3WwJwY2ehDfE7XTbFUiexsYIq7EIe4kWz8GwB/V35Hpzx0HTDdfwVuGqnREDU5lZbq3j4tTpOCrARyO37JO6R76/hWMiO5gQ0f7NmgyOAd+4e+1lzS8y4ZCJvQ24fHOtHA9cp0uoY9L6fFYgYy0NCjOodL1MnBQ9AAfp57Wkv2Gtq2sVlO/kxTXls4aTS36FXDZjW0KSOeRAwL10P8LiSdpWTY4Al3fODvVCvqf"
+    dot_files:
+      - bashrc
+      - git-completion.bash
+      - gitconfig
+      - setup-gpdb-cluster.sh
+      - start-server.sh
+    sudo: true
+    shell: "/bin/bash"

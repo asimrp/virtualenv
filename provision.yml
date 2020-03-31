@@ -1,0 +1,21 @@
+- hosts: all
+  become: yes
+  gather_facts: no
+  roles:
+    - develop
+    - vmsetup
+  pre_tasks:
+    - name: 'update archives'
+      raw: sudo apt-get update
+    - name: 'install python2'
+      raw: sudo apt-get -y install python2.7
+  vars:
+    ansible_python_interpreter: /usr/bin/python2.7
+    develop_groups: ["develop", "vagrant"]
+  tasks:
+    - setup:
+        filter: ansible_all_ipv4*
+    - name: Display login info
+      debug:
+        msg: Access your user on {{ ansible_all_ipv4_addresses[0] }} or {{ ansible_all_ipv4_addresses[1] }}
+

@@ -1,0 +1,62 @@
+---
+- name: develop group
+  group: name=develop gid=200 state=present
+  tags: users
+
+- name: change ownership of install path
+  file:
+    path: /usr/local
+    recurse: yes
+    owner: root
+    group: develop
+    mode: 0775
+    state: directory
+
+- name: create core dump directory
+  file:
+    path: /tmp/gpdb_cores
+    owner: root
+    group: develop
+    mode: 0775
+    state: directory
+
+- name: set permissions for local
+  file:
+    path: /usr/local
+    owner: root
+    group: develop
+    mode: 0777
+    state: directory
+
+- name: users
+  user: name={{ item.name }} groups={{ develop_groups }} shell={{ item.shell }} state=present
+  tags: develop
+  with_items: "{{develop_users}}"
+
+- name: develop ssh keys
+  authorized_key: user={{ item.0.name }} key="{{ item.1 }}"
+  tags: develop
+  with_subelements:
+    - "{{develop_users}}"
+    - ssh_keys
+
+- name: develop dot files
+  copy:
+    src: "{{ item.0.name }}/{{ item.1 }}"
+    dest: /home/{{ item.0.name }}/.{{ item.1 }}
+    owner: "{{ item.0.name }}"
+    group: "{{ item.0.name }}"
+  with_subelements:
+    - "{{develop_users}}"
+    - dot_files
+  tags: develop
+
+- name: develop sudo
+  template:
+    src: sudoer.j2
+    dest: /etc/sudoers.d/{{ item.name }}
+    owner: root
+    mode: "0440"
+  tags: develop
+  with_items: "{{develop_users}}"
+  when: "item.sudo|d(False) == True"

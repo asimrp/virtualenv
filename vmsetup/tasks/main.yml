@@ -1,0 +1,115 @@
+- name: set up sysctl on the vm
+  copy:
+    src: "{{ role_path }}/conf/gpdb.conf"
+    dest: /etc/sysctl.d/gpdb.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: reload sysctl
+  shell: sysctl -p /etc/sysctl.d/gpdb.conf
+
+- name: set up limits for gpdb
+  copy:
+    src: "{{ role_path }}/conf/gpdb_limits.conf"
+    dest:  /etc/security/limits.d/gpdb.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: quiet locale warnings
+  blockinfile:
+    path: /etc/default/locale
+    block: |
+      LANG=en_US.UTF-8
+      LC_ALL=en_US.UTF-8
+
+- name: do not terminate IPC on logout
+  lineinfile:
+    path: /etc/systemd/logind.conf
+    line: RemoveIPC=no
+
+- name: ensure libraries are in path
+  blockinfile:
+    path: /etc/ld.so.conf
+    block: |
+      /usr/local/lib
+      /usr/local/lib64
+
+- name: install basic packages
+  apt:
+    name:
+      - vim
+      - emacs
+      - tmux
+      - gcc-9
+      - clang
+      - valgrind
+      - gdb
+      - lldb
+      - ccache
+    update_cache: yes
+    state: latest
+
+- name: install gpdb required packages
+  apt:
+    name:
+      - bison
+      - build-essential
+      - flex
+      - git-core
+      - libapr1-dev
+      - libbz2-dev
+      - libcurl4-openssl-dev
+      - libevent-dev
+      - libffi-dev
+      - libperl-dev
+      - libipc-run-perl
+      - libreadline-dev
+      - libssl-dev
+      - libxml2-dev
+      - libyaml-dev
+      - libzstd-dev
+      - pkg-config
+      - python-dev
+      - python-pip
+      - python-setuptools
+      - zlib1g-dev
+    update_cache: yes
+    state: latest
+
+- name: install pip packages
+  pip:
+    name:
+      - cffi
+      - lockfile
+      - paramiko
+      - setuptools
+      - psutil
+      - cryptography
+    state: present
+
+- name: sshd config
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+  notify:
+  - restart sshd
+  tags: common
+ 
+- name: sshd service
+  service: name=sshd enabled=yes state=started
+  tags: common
+
+- name: install chrony
+  package:
+    name: chrony
+    state: present
+  tags: common
+
+- name: chrony service
+  service:
+    name: chronyd
+    enabled: yes
+    state: started
+  tags: common
