@@ -9,5 +9,6 @@ develop_users:
       - gitconfig
       - setup-gpdb-cluster.sh
       - start-server.sh
+      - emacs
     sudo: true
     shell: "/bin/bash"

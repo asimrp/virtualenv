@@ -72,9 +72,12 @@
       - libzstd-dev
       - pkg-config
       - python-dev
-      - python-pip
       - python-setuptools
       - zlib1g-dev
+      - cmake
+      - net-tools
+      - man-db
+      - manpages-posix
     update_cache: yes
     state: latest
 

@@ -1,0 +1,65 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Slightly different approach - use a hook instead of a mode
+
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
+(add-hook 'c-mode-hook
+	  (function
+	   (lambda nil
+	     (if (or (string-match "postgresql" buffer-file-name) (string-match "gpdb" buffer-file-name))
+		 (progn
+		   (c-set-style "bsd")
+		   (setq c-basic-offset 4)
+		   (setq tab-width 4)
+		   (c-set-offset 'case-label '+)
+		   (setq fill-column 79)
+		   (setq indent-tabs-mode t)
+		   )
+	       ))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; To work on the documentation, the following (or a variant, as above)
+;;; can be helpful.
+
+(defun pgsql-sgml-mode ()
+  "SGML mode adjusted for PostgreSQL project"
+  (interactive)
+  (sgml-mode)
+
+  (setq indent-tabs-mode nil)
+  (setq sgml-basic-offset 1)
+)
+
+(setq auto-mode-alist
+  (cons '("\\(postgres\\|gpdb\\|pgsql\\).*\\.sgml\\'" . pgsql-sgml-mode)
+        auto-mode-alist))
+
+(autoload 'lldb "gud-lldb" "lldb mode." t)
+
+(which-function-mode 1)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(elfeed-feeds
+   (quote
+    ("http://rhaas.blogspot.com/feeds/posts/default" "https://hacker-news.firebaseio.com/v0/" "https://news.ycombinator.com/")))
+ '(send-mail-function (quote smtpmail-send-it)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+;; (require 'whitespace)
+;; (setq whitespace-style '(face empty tabs lines-tail trailing))
+;; (global-whitespace-mode f)

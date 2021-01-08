@@ -1,6 +1,6 @@
 [user]
-	name = Asim Praveen
-	email = apraveen@pivotal.io
+	name = Asim R P
+	email = pasim@vmware.com
 [alias]
 	lg = log --graph --pretty=format':%C(yellow)%h%Cblue%d%Creset %s %C(red) %an, %ar%Creset' --abbrev-commit
 	st = status -sb
